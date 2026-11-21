@@ -1,26 +1,218 @@
 @import "tailwindcss";
 
+/*
+ * Design tokens. Components reference these through the Tailwind theme
+ * (e.g. bg-surface, text-muted, border-line) so light/dark switch in one place.
+ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+  --bg: #f5f6f8;
+  --surface: #ffffff;
+  --surface-2: #f0f2f5;
+  --surface-3: #e7eaef;
+  --line: #dde1e7;
+  --line-strong: #c5cbd4;
+  --text: #121722;
+  --text-muted: #5b6474;
+  --text-faint: #8a93a3;
+  --accent: #2f5bea;
+  --accent-soft: #e6ecfd;
+  --accent-text: #ffffff;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* Agent identity */
+  --agent-coordinator: #6d4ae0;
+  --agent-destination: #0f9d7a;
+  --agent-budget: #c27a0e;
+  --agent-itinerary: #2f74d0;
+
+  /* Execution states */
+  --st-offline: #8a93a3;
+  --st-discovering: #7c5ce6;
+  --st-available: #3f8f84;
+  --st-pending: #b7791f;
+  --st-running: #2f6fe0;
+  --st-communicating: #0e8fb3;
+  --st-completed: #198754;
+  --st-failed: #d0353f;
+  --st-retrying: #d9661a;
+
+  --warning-bg: #fff6e5;
+  --warning-line: #f0c36d;
+  --warning-text: #7a4b00;
+  --danger-bg: #fdecee;
+  --danger-line: #f1a7ad;
+  --danger-text: #8d1a23;
+  --success-bg: #e8f6ee;
+  --success-text: #0f5c37;
+
+  --graph-bg: #fbfcfd;
+  --graph-dot: #dfe3e9;
+  --shadow: 0 1px 2px rgb(16 24 40 / 0.04), 0 1px 3px rgb(16 24 40 / 0.06);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --bg: #0b0e14;
+    --surface: #121620;
+    --surface-2: #181d29;
+    --surface-3: #212736;
+    --line: #262d3d;
+    --line-strong: #364056;
+    --text: #e8ebf2;
+    --text-muted: #9aa3b5;
+    --text-faint: #6b7489;
+    --accent: #6d8cff;
+    --accent-soft: #1b2442;
+    --accent-text: #0b0e14;
+
+    --agent-coordinator: #a08bff;
+    --agent-destination: #34c9a0;
+    --agent-budget: #f0aa3c;
+    --agent-itinerary: #5ea4ff;
+
+    --st-offline: #6b7489;
+    --st-discovering: #a08bff;
+    --st-available: #5fb8ab;
+    --st-pending: #e3a94a;
+    --st-running: #6d9bff;
+    --st-communicating: #3cc3e6;
+    --st-completed: #3dc27f;
+    --st-failed: #ff6b74;
+    --st-retrying: #ff9447;
+
+    --warning-bg: #2a2111;
+    --warning-line: #6b5120;
+    --warning-text: #f3cf86;
+    --danger-bg: #2c1418;
+    --danger-line: #6e2a31;
+    --danger-text: #ffb3b8;
+    --success-bg: #11261b;
+    --success-text: #8fe0b3;
+
+    --graph-bg: #0f131b;
+    --graph-dot: #1d2330;
+    --shadow: 0 1px 2px rgb(0 0 0 / 0.4);
   }
 }
 
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-fg: var(--text);
+  --color-muted: var(--text-muted);
+  --color-faint: var(--text-faint);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-fg: var(--accent-text);
+  --color-warning-bg: var(--warning-bg);
+  --color-warning-line: var(--warning-line);
+  --color-warning-fg: var(--warning-text);
+  --color-danger-bg: var(--danger-bg);
+  --color-danger-line: var(--danger-line);
+  --color-danger-fg: var(--danger-text);
+  --color-success-bg: var(--success-bg);
+  --color-success-fg: var(--success-text);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+html {
+  color-scheme: light dark;
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+}
+
+.graph-grid {
+  background-color: var(--graph-bg);
+  background-image: radial-gradient(var(--graph-dot) 1px, transparent 1px);
+  background-size: 18px 18px;
+}
+
+@keyframes status-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes status-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
+
+@keyframes node-glow {
+  0%,
+  100% {
+    opacity: 0.18;
+  }
+  50% {
+    opacity: 0.42;
+  }
+}
+
+@keyframes edge-flow {
+  to {
+    stroke-dashoffset: -24;
+  }
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.anim-spin {
+  animation: status-spin 1.1s linear infinite;
+  transform-origin: center;
+  transform-box: fill-box;
+}
+
+.anim-pulse {
+  animation: status-pulse 1.6s ease-in-out infinite;
+}
+
+.anim-glow {
+  animation: node-glow 1.8s ease-in-out infinite;
+}
+
+.anim-edge-flow {
+  animation: edge-flow 1s linear infinite;
+}
+
+.anim-enter {
+  animation: fade-in-up 220ms ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .anim-spin,
+  .anim-pulse,
+  .anim-glow,
+  .anim-edge-flow,
+  .anim-enter {
+    animation: none;
+  }
 }
