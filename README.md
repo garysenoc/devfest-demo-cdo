@@ -6,11 +6,15 @@ A working travel planner built from **four independently running AI agents** tha
 
 There are no simulated agents. Each specialist is its own HTTP server with its own Agent Card. The Coordinator talks to them only through the official `a2a-sdk` client, and everything the dashboard shows comes from those protocol events.
 
+![Live dashboard: the Destination and Budget agents running in parallel while the Coordinator talks to them over A2A](docs/images/dashboard-live.png)
+
+*A live run of the Cebu demo with Gemini. The Coordinator has discovered all three Agent Cards and is running the Destination and Budget agents in parallel, each on its own A2A task. More in [Screenshots](#screenshots).*
+
 ---
 
 ## Contents
 
-1. [Features](#features) · 2. [Tech stack](#technology-stack) · 3. [Architecture](#architecture) · 4. [Google ADK](#google-adk-in-this-project) · 5. [A2A](#a2a-in-this-project) · 6. [The agents](#the-agents) · 7. [Project structure](#project-structure)
+1. [Features](#features) · [Screenshots](#screenshots) · 2. [Tech stack](#technology-stack) · 3. [Architecture](#architecture) · 4. [Google ADK](#google-adk-in-this-project) · 5. [A2A](#a2a-in-this-project) · 6. [The agents](#the-agents) · 7. [Project structure](#project-structure)
 8. [Installation](#installation) · 9. [Configuration reference](#configuration-reference) · 10. [Run](#running-the-system) · 11. [Endpoints](#endpoints) · 12. [Testing A2A by hand](#testing-a2a-communication-by-hand)
 13. [Example requests](#example-requests) · 14. [Visualization guide](#agent-visualization-guide) · 15. [Live demo](#live-demo) · 16. [Automated tests](#automated-tests) · 17. [Troubleshooting](#troubleshooting) · 18. [Future improvements](#future-improvements)
 
@@ -29,6 +33,22 @@ Deeper docs: [Architecture](docs/ARCHITECTURE.md) · [A2A communication](docs/A2
 - **Live visualization.** Agent cards with 9 states, an animated SVG communication graph, an execution timeline, and an A2A inspector showing sanitized JSON payloads.
 - **Durable event stream.** SSE backed by SQLite, with per-execution access tokens, reconnection via `Last-Event-ID`, page-reload recovery, and final-result retrieval that doesn't depend on the stream.
 - **Plan refinement.** "Make the trip cheaper" and similar requests go to a Coordinator ADK agent. It decides which specialists to re-invoke over A2A and reuses the rest of the plan.
+
+## Screenshots
+
+All screenshots come from one real run of the demo request (3 days in Cebu, ₱10,000, beaches, adventure and local food) using Gemini through Vertex AI.
+
+**Completed run.** Every agent has finished, and each edge shows how many A2A messages went in each direction.
+
+![Completed agent collaboration graph and agent cards](docs/images/dashboard-completed.png)
+
+**Execution timeline and A2A inspector.** The inspector lists only real protocol messages. Here the selected row is the Coordinator's `SendStreamingMessage` to the Itinerary agent, with the structured task payload.
+
+![Execution timeline and A2A communication inspector](docs/images/a2a-inspector.png)
+
+**The generated travel plan.** The trip overview checks the estimated total against the budget, followed by the day-by-day itinerary with times, transport notes and cost estimates.
+
+![Generated travel plan with overview and daily itinerary](docs/images/travel-plan.png)
 
 ## Technology stack
 
